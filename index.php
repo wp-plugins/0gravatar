@@ -3,13 +3,13 @@
 Plugin Name: 0gravatar
 Plugin URI: http://0gravatar.com/
 Author: Eli Scheetz
-Author URI: http://0gravatar.com/
+Author URI: http://wordpress.ieonly.com/category/my-plugins/no-gravatar/
 Contributors: scheeeli
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8VWNB5QEJ55TJ
-Description: This Plugin Inserts the user's display_name if they do not have a gravatar.
-Version: 1.2.11.07
+Description: This Plugin replaces the get_avatar function in pluggable.php to pass an alternate image to gravatar.com that generates the user's display_name if they do not yet have a gravatar.
+Version: 1.2.11.17
 */
-$NOGRAVATAR_Version='1.2.11.07';
+$NOGRAVATAR_Version='1.2.11.17';
 if (!isset($_SESSION)) session_start();
 if (__FILE__ == $_SERVER['SCRIPT_FILENAME']) die('You are not allowed to call this page directly.<p>You could try starting <a href="http://'.$_SERVER['SERVER_NAME'].'">here</a>.');
 $_SESSION['eli_debug_microtime']['include(NOGRAVATAR)'] = microtime(true);
@@ -61,8 +61,7 @@ else {
  * @since 2.5
  * @param int|string|object $id_or_email A user ID,  email address, or comment object
  * @param int $size Size of the avatar image
- * @param string $default URL to a default image to use if no avatar is available
- * @param string $alt Alternate text to use in image tag. Defaults to blank
+ * @param string $default URL is overwritten here to generate an alternate image of the user's display_name
  * @return string <img> tag for the user's avatar
 */
 	function get_avatar( $id_or_email, $size = '96', $default = '', $alt = false ) {
@@ -127,24 +126,27 @@ else {
 			else
 				$host = 'http://0.gravatar.com';
 		}
-
-		if ( 'mystery' == $default )
-			$default = "$host/avatar/ad516503a11cd5ca435acc9bb6523536?s={$size}"; // ad516503a11cd5ca435acc9bb6523536 == md5('unknown@gravatar.com')
-		elseif ( 'blank' == $default )
-			$default = includes_url('images/blank.gif');
-		elseif ( !empty($email) && 'gravatar_default' == $default )
-			$default = '';
-		elseif ( 'gravatar_default' == $default )
-			$default = "$host/avatar/s={$size}";
-		elseif ( empty($email) )
-			$default = "$host/avatar/?d=$default&amp;s={$size}";
-		elseif ( strpos($default, 'http://') === 0 )
-			$default = add_query_arg( 's', $size, $default );
-
+		$out = "http://0gravatar.com/avatar/$size/".NOGRAVATAR_encode($display_name.'@'.$email).".gif";
+		if (true) {
+			$safe_alt = esc_attr($display_name);
+			$default = $out;
+		} else {
+			if ( 'mystery' == $default )
+				$default = "$host/avatar/ad516503a11cd5ca435acc9bb6523536?s={$size}"; // ad516503a11cd5ca435acc9bb6523536 == md5('unknown@gravatar.com')
+			elseif ( 'blank' == $default )
+				$default = includes_url('images/blank.gif');
+			elseif ( !empty($email) && 'gravatar_default' == $default )
+				$default = '';
+			elseif ( 'gravatar_default' == $default )
+				$default = "$host/avatar/s={$size}";
+			elseif ( empty($email) )
+				$default = "$host/avatar/?d=$default&amp;s={$size}";
+			elseif ( strpos($default, 'http://') === 0 )
+				$default = add_query_arg( 's', $size, $default );
+		}
 		if ( !empty($email) ) {
-			if (NOGRAVATAR_404($email)) {
-				$out = "http://0gravatar.com/avatar/".NOGRAVATAR_encode($display_name.'@'.$email)."?s=$size";
-				$safe_alt = "$display_name has no gravatar";
+			if (false && NOGRAVATAR_404($email)) {
+				$safe_alt = esc_attr($display_name)." has no gravatar";
 				$avatar = "<img alt='{$safe_alt}' src='{$out}' class='avatar avatar-{$size} photo' height='{$size}' width='{$size}' />";
 			} else {
 				$out = "$host/avatar/";

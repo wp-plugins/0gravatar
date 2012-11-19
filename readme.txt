@@ -5,20 +5,20 @@ Author URI: http://wordpress.ieonly.com/category/my-plugins/no-gravatar/
 Contributors: scheeeli
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8VWNB5QEJ55TJ
 Tags: gravatar, plugin, avatar, display-name, comment, post, author, image, 0gravatar.com
-Stable tag: 1.2.11.07
-Version: 1.2.11.07
+Stable tag: 1.2.11.17
+Version: 1.2.11.17
 Requires at least: 2.6
 Tested up to: 3.4.2
 
-This Plugin Inserts the user's display_name if they do not have a gravatar.
+This Plugin passes an alternate image to gravatar.com that generates the user's display_name if they do not yet have a gravatar.
 
 == Description ==
 
-This Plugin Inserts the user's display_name if they do not have a gravatar.
+This Plugin replaces the get_avatar function in pluggable.php to pass an alternate image to gravatar.com that generates the user's display_name if they do not yet have a gravatar.
 
 More features coming soon...
 
-Plugin Updated Nov-7th
+Plugin Updated Nov-17th
 
 == Installation ==
 
@@ -31,10 +31,16 @@ Plugin Updated Nov-7th
 
 == Changelog ==
 
+= 1.2.11.17 =
+* Increased performance by sending the URL for the auto-generated display_name to gravatar.com as the d parameter instead of checking for a 404 on every gravatar.
+
 = 1.2.11.07 =
 * First versions uploaded to WordPress.
 
 == Upgrade Notice ==
+
+= 1.2.11.17 =
+Increased performance by sending the URL to gravatar.com instead of checking for a 404.
 
 = 1.2.11.07 =
 First versions available through WordPress.
